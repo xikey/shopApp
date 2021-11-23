@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shopp_app/model/product.dart';
+import 'package:shopp_app/providers/product.dart';
 
 class Products with ChangeNotifier {
   List<Product> _items = [
@@ -40,6 +40,13 @@ class Products with ChangeNotifier {
   /// چون زبان ما دارته و وقتی کل لیستو برگردونیم یعنی یه دسترسی به آدرس لیست اصلی دادیم و همه تغییرات مستقیم رو لیست اصلی اعمال میشه!
   /// برای همین موضوع ما فقط محتویات رو به صورت یک لیست استخراج میکنیم.
   List<Product> get items => [..._items];
+
+  List<Product> get showOnlyFavorites =>
+      [..._items.where((element) => element.isFavorite)];
+
+  Product findVireById(String id) {
+    return _items.firstWhere((element) => element.id == id);
+  }
 
   void add_product(Product value) {
     // _items.add(value);

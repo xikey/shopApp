@@ -4,9 +4,10 @@ import '../providers/Products.dart';
 import '../widget/product_grid_item_widget.dart';
 
 class ProductsGridWidget extends StatelessWidget {
-  const ProductsGridWidget({
-    Key? key,
+  const ProductsGridWidget({Key? key, required this.showOnlyFavorites,
   }) : super(key: key);
+
+ final bool showOnlyFavorites;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,8 @@ class ProductsGridWidget extends StatelessWidget {
     ///قسمت مهم ماجرا اینجاس که فقط فقط فقط همین ویجت تغییرات روش اعمال میشه و در واقع set state
     ///ویجت های بالاسری هییییچ تغییری نمیکنند و حتی ست استیت(set state) اونها هم فراخوانی نمیشه
     final productsData = Provider.of<Products>(context);
-    final products = productsData.items;
+
+    final products = !showOnlyFavorites? productsData.items:productsData.showOnlyFavorites;
 
     return GridView.builder(
       itemCount: products.length,
@@ -25,13 +27,18 @@ class ProductsGridWidget extends StatelessWidget {
           crossAxisSpacing: 10,
           childAspectRatio: 1,
           mainAxisSpacing: 10),
-      itemBuilder: (bContext, index) => Container(
-          child: ProductGridItem(
-        id: products[index].id,
-        key: Key(products[index].id),
-        title: products[index].title,
-        imageUrl: products[index].imageUrl,
-      )),
+      itemBuilder: (bContext, index) =>
+      ///
+      /// important *********************************
+      /// chera az ChangeNotifierProvider.create estefade nakardim va az ChangeNotifierProvider.value estefade kardim
+      /// 1- hamishe behtare to list ha az value estefade konim chon be context niza nadarom va to listha hengame recycle shodan bug eejad mishe
+      /// 2- chon az provider estefade kardim vaghty kare safhe bade ma tamoom mishe data az bein nmire ammmaaaa too halate value az bein mire
+          //   ChangeNotifierProvider(
+          // create: (cntx)=>products[index],
+          ChangeNotifierProvider.value(
+        value: products[index],
+        child: Container(child: ProductGridItem()),
+      ),
       padding: const EdgeInsets.all(10.0),
     );
   }
